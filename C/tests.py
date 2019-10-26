@@ -1,6 +1,6 @@
 import pytest
 
-from yandex_201910.C.c1 import (
+from .solution import (
     Stack, process_expression, get_value, pre_calc, main_calc
 )
 
