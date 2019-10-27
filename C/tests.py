@@ -1,7 +1,10 @@
 import pytest
 
-from .solution import (
-    Stack, process_expression, pre_calc, main_calc, sort_variables)
+from .solution import Stack, calc, pre_calc, main_calc, convert_values_to_dict
+
+
+Stack.__repr__ = lambda self: repr(self._values)
+Stack.__eq__ = lambda self, other: self._values == other._values
 
 
 @pytest.fixture(params=[[]])
@@ -52,7 +55,7 @@ def test_error_on_empty_pop(stack):
     ]
 )
 def test_process_expression_without_precalc(expression, values, expected):
-    assert process_expression(expression, values, Stack()) == expected
+    assert calc(expression, values, Stack()) == expected
 
 
 @pytest.mark.parametrize(
@@ -77,7 +80,7 @@ def test_prepare_expression(expression, expected_expression, expected_stack):
     ]
 )
 def test_process_expression_after_precalc(expression, values, stack, expected):
-    assert process_expression(expression, values, stack) == expected
+    assert calc(expression, values, stack) == expected
 
 
 @pytest.mark.parametrize(
@@ -88,16 +91,16 @@ def test_process_expression_after_precalc(expression, values, stack, expected):
     ],
 )
 def test_main_calc(expression, values_list, expected):
-    assert main_calc(expression, values_list) == expected
+    assert list(main_calc(expression, values_list)) == expected
 
 
 @pytest.mark.parametrize(
-    ('expression', 'expected_values'),
+    ('expression', 'value_rows', 'expected_dict'),
     [
-        ('a 2 +'.split(), ['a']),
-        ('a b < 5 14 ?'.split(), ['a', 'b']),
-        ('a 2 z 80 p - / * +'.split(), ['a', 'p', 'z']),
+        ('a 2 +', ['2', '3'], [{'a': 2}, {'a': 3}]),
+        ('a b < 5 14 ?', ['5 10', '10 5'], [{'a': 5, 'b': 10}, {'a': 10, 'b': 5}]),
+        ('a 2 z 80 p - / * +', ['1 2 3'], [{'a': 1, 'p': 2, 'z': 3}]),
     ],
 )
-def test_sort_variables(expression, expected_values):
-    assert sort_variables(expression) == expected_values
+def test_read_values(expression, value_rows, expected_dict):
+    assert convert_values_to_dict(expression, value_rows) == expected_dict

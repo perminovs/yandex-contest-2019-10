@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Iterator
 
 
 class Stack:
@@ -14,12 +14,6 @@ class Stack:
 
     def copy(self):
         return type(self)(self._values[:])
-
-    def __repr__(self):
-        return repr(self._values)
-
-    def __eq__(self, other):
-        return self._values == other._values
 
 
 def plus(*args):
@@ -73,10 +67,11 @@ operation_mapping = {
     '?': (choose, 3),
 }
 
-letters = {let: number for number, let in enumerate(ascii_lowercase)}
+LETTERS = set(ascii_lowercase)
 
 
-def process_expression(expression: List[str], values: Dict[str, int], stack: Stack):
+def calc(expression: List[str], values: Dict[str, int], stack: Stack):
+    """ Calculate given expression with variable values and prepared stack. """
     stack = stack.copy()
     for symbol in expression:
         if isinstance(symbol, int):
@@ -100,12 +95,13 @@ def process_expression(expression: List[str], values: Dict[str, int], stack: Sta
 
 
 def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
+    """ Simplify expression before first variable. """
     stack = Stack()
     idx = 0
     for idx, symbol in enumerate(expression):
         if symbol.isdigit():
             stack.push(int(symbol))
-        elif symbol in letters:
+        elif symbol in LETTERS:
             stack.push(symbol)
         else:
             func, arg_cnt = operation_mapping[symbol]
@@ -125,13 +121,34 @@ def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
     return expression[idx + 1:], stack
 
 
-def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[int]:
+def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> Iterator[int]:
     pre_expression, pre_stack = pre_calc(expression)
+    for values in values_list:
+        yield calc(pre_expression, values, pre_stack)
+
+
+def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:
+    variables = sorted([x for x in expression.split() if x.isalpha()])
     return [
-        process_expression(pre_expression, values, pre_stack)
-        for values in values_list
+        {var: int(val) for var, val in zip(variables, value_row.split())}
+        for value_row in value_rows
     ]
 
 
-def sort_variables(expression: List[str]) -> List[str]:
-    return sorted([x for x in expression if x.isalpha()])
+def read() -> Tuple[str, List[str]]:
+    _ = input()
+    expression = input()
+    cases_cnt = int(input())
+    var_values = [input() for _ in range(cases_cnt)]
+    return expression, var_values
+
+
+def main():
+    expression, var_values = read()
+    values = convert_values_to_dict(expression, var_values)
+    for r in main_calc(expression.split(), values):
+        print(r)
+
+
+if __name__ == '__main__':
+    main()
