@@ -1,8 +1,7 @@
 import pytest
 
 from .solution import (
-    Stack, process_expression, get_value, pre_calc, main_calc
-)
+    Stack, process_expression, pre_calc, main_calc, sort_variables)
 
 
 @pytest.fixture(params=[[]])
@@ -36,34 +35,20 @@ def test_error_on_empty_pop(stack):
 
 
 @pytest.mark.parametrize(
-    ('symbol', 'values', 'expected'),
-    [
-        ('a', [1], 1),
-        ('b', [1, 4], 4),
-        ('c', [1, 4, 2, -1], 2),
-        ('c', [1, 4, 2, -1], 2),
-        ('d', [1, 4, 2, -1], -1),
-    ]
-)
-def test_get_value(symbol, values, expected):
-    assert get_value(symbol, values) == expected
-
-
-@pytest.mark.parametrize(
     ('expression', 'values', 'expected'),
     [
-        (['a', 2, 2, '+', '*'], [2], 8),
-        (['a', 2, 2, '+', '*'], [3], 12),
+        (['a', 2, 2, '+', '*'], {'a': 2}, 8),
+        (['a', 2, 2, '+', '*'], {'a': 3}, 12),
 
-        (['a', 'b', '<', 5, 14, '?'], [10, 5], 14),
-        (['a', 'b', '<', 5, 14, '?'], [5, 10], 5),
+        (['a', 'b', '<', 5, 14, '?'], {'a': 10, 'b': 5}, 14),
+        (['a', 'b', '<', 5, 14, '?'], {'a': 5, 'b': 10}, 5),
 
-        (['a', 'b', '-'], [5, 10], -5),
-        (['a', 'b', '-'], [10, 10], 0),
+        (['a', 'b', '-'], {'a': 5, 'b': 10}, -5),
+        (['a', 'b', '-'], {'a': 10, 'b': 10}, 0),
 
-        (['a', 'b', '/'], [10, 10], 1),
-        (['a', 'b', '/'], [10, 11], 0),
-        (['a', 'b', '/'], [10, 4], 2),
+        (['a', 'b', '/'], {'a': 10, 'b': 10}, 1),
+        (['a', 'b', '/'], {'a': 10, 'b': 11}, 0),
+        (['a', 'b', '/'], {'a': 10, 'b': 4}, 2),
     ]
 )
 def test_process_expression_without_precalc(expression, values, expected):
@@ -87,8 +72,8 @@ def test_prepare_expression(expression, expected_expression, expected_stack):
 @pytest.mark.parametrize(
     ('expression', 'stack', 'values', 'expected'),
     [
-        ([], Stack([4]), [4], 4),
-        (['*'], Stack(['a', 4]), [2], 8),
+        ([], Stack([4]), {}, 4),
+        (['*'], Stack(['a', 4]), {'a': 2}, 8),
     ]
 )
 def test_process_expression_after_precalc(expression, values, stack, expected):
@@ -98,9 +83,21 @@ def test_process_expression_after_precalc(expression, values, stack, expected):
 @pytest.mark.parametrize(
     ('expression', 'values_list', 'expected'),
     [
-        ('a 2 2 + *'.split(), [[2], [3]], [8, 12]),
-        ('a b < 5 14 ?'.split(), [[10, 5], [5, 10]], [14, 5]),
+        ('a 2 2 + *'.split(), [{'a': 2}, {'a': 3}], [8, 12]),
+        ('a b < 5 14 ?'.split(), [{'a': 10, 'b': 5}, {'a': 5, 'b': 10}], [14, 5]),
     ],
 )
 def test_main_calc(expression, values_list, expected):
     assert main_calc(expression, values_list) == expected
+
+
+@pytest.mark.parametrize(
+    ('expression', 'expected_values'),
+    [
+        ('a 2 +'.split(), ['a']),
+        ('a b < 5 14 ?'.split(), ['a', 'b']),
+        ('a 2 z 80 p - / * +'.split(), ['a', 'p', 'z']),
+    ],
+)
+def test_sort_variables(expression, expected_values):
+    assert sort_variables(expression) == expected_values

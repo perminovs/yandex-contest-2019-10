@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 
 class Stack:
@@ -76,20 +76,15 @@ operation_mapping = {
 letters = {let: number for number, let in enumerate(ascii_lowercase)}
 
 
-def get_value(symbol, values):
-    idx = letters[symbol]
-    return values[idx]
-
-
-def process_expression(expression: List[str], values: List[int], stack: Stack):
+def process_expression(expression: List[str], values: Dict[str, int], stack: Stack):
     stack = stack.copy()
     for symbol in expression:
         if isinstance(symbol, int):
             stack.push(symbol)
         elif symbol.isdigit():
             stack.push(int(symbol))
-        elif symbol in letters:
-            stack.push(get_value(symbol, values))
+        elif symbol in values:
+            stack.push(values[symbol])
         else:
             func, arg_cnt = operation_mapping[symbol]
 
@@ -98,7 +93,7 @@ def process_expression(expression: List[str], values: List[int], stack: Stack):
                 # at this moment we have only `int` or `variable` on stack
                 x = stack.pop()
                 if isinstance(x, str):
-                    x = get_value(x, values)
+                    x = values[x]
                 args.append(x)
             stack.push(func(*args))
     return stack.pop()
@@ -130,9 +125,13 @@ def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
     return expression[idx + 1:], stack
 
 
-def main_calc(expression: List[str], values_list: List[List[int]]) -> List[int]:
+def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[int]:
     pre_expression, pre_stack = pre_calc(expression)
     return [
         process_expression(pre_expression, values, pre_stack)
         for values in values_list
     ]
+
+
+def sort_variables(expression: List[str]) -> List[str]:
+    return sorted([x for x in expression if x.isalpha()])
