@@ -1,4 +1,5 @@
 def build_minimum_spanning_tree(graph):
+    # graph: [(weight, e1, e2), (...), ...]
     minimum_spanning_tree = set()
     groups = {}
 
@@ -8,9 +9,10 @@ def build_minimum_spanning_tree(graph):
         g2 = groups.get(e2)
         if g1 is not None and g2 is not None and g1 == g2:
             # got edges from the same connect group,
-            # can't add this vertex, it will make e1 cycle
+            # can't add this vertex, it will make a cycle
             continue
-        elif g1 is not None and g2 is not None:
+
+        if g1 is not None and g2 is not None:
             # got edges from different connect groups, need to union it
             for k in groups:
                 if groups[k] == g2:

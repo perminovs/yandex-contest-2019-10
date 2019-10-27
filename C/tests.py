@@ -1,11 +1,10 @@
 import pytest
 
-from .graph import build_minimum_spanning_tree
+from .solution import build_minimum_spanning_tree
 
 
 @pytest.mark.parametrize(
     ('graph', 'expected_tree'),
-    # (weight, start, end)
     [
         (
             # (1)--10--(2)
