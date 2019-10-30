@@ -121,10 +121,9 @@ def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
     return expression[idx + 1:], stack
 
 
-def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> Iterator[int]:
+def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[int]:
     pre_expression, pre_stack = pre_calc(expression)
-    for values in values_list:
-        yield calc(pre_expression, values, pre_stack)
+    return [calc(pre_expression, values, pre_stack) for values in values_list]
 
 
 def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:

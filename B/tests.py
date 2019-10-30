@@ -91,7 +91,7 @@ def test_process_expression_after_precalc(expression, values, stack, expected):
     ],
 )
 def test_main_calc(expression, values_list, expected):
-    assert list(main_calc(expression, values_list)) == expected
+    assert main_calc(expression, values_list) == expected
 
 
 @pytest.mark.parametrize(
