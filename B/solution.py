@@ -45,12 +45,12 @@ def eq(*args):
 
 def more(*args):
     b, a = args
-    return a > b
+    return int(a > b)
 
 
 def less(*args):
     b, a = args
-    return a < b
+    return int(a < b)
 
 
 def choose(*args):
