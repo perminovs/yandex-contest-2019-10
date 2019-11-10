@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from typing import List, Tuple, Dict, Iterator
+from typing import List, Tuple, Dict
 
 
 class Stack:
@@ -33,6 +33,8 @@ def multiply(*args):
 
 def divide(*args):
     b, a = args
+    if b == 0:
+        return 0
     return a // b
 
 
@@ -129,7 +131,7 @@ def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[
 def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:
     variables = sorted([x for x in expression.split() if x.isalpha()])
     return [
-        {var: int(val) for var, val in zip(variables, value_row.split())}
+        {var: int(value) for var, value in zip(variables, value_row.split())}
         for value_row in value_rows
     ]
 

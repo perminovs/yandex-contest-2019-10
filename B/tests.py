@@ -87,7 +87,11 @@ def test_process_expression_after_precalc(expression, values, stack, expected):
     ('expression', 'values_list', 'expected'),
     [
         ('a 2 2 + *'.split(), [{'a': 2}, {'a': 3}], [8, 12]),
+        ('2 a 3 4 + * +'.split(), [{'a': 1}], [9]),
+        ('2 a 3 4 + * + 1 +'.split(), [{'a': 1}], [10]),
+        ('2 a 3 4 + * + 1 + b +'.split(), [{'a': 1, 'b': 3}], [13]),
         ('a b < 5 14 ?'.split(), [{'a': 10, 'b': 5}, {'a': 5, 'b': 10}], [14, 5]),
+        ('a a 0 0 + + +'.split(), [{'a': 10}, {'a': 5}], [20, 10]),
     ],
 )
 def test_main_calc(expression, values_list, expected):
