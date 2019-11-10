@@ -1,6 +1,6 @@
 import pytest
 
-from .solution import Stack, calc, pre_calc, main_calc, convert_values_to_dict
+from .solution import Stack, main_calc, convert_values_to_dict
 
 
 Stack.__repr__ = lambda self: repr(self._values)
@@ -35,52 +35,6 @@ def test_pop(stack, stack_initial_values):
 def test_error_on_empty_pop(stack):
     with pytest.raises(IndexError):
         stack.pop()
-
-
-@pytest.mark.parametrize(
-    ('expression', 'values', 'expected'),
-    [
-        (['a', 2, 2, '+', '*'], {'a': 2}, 8),
-        (['a', 2, 2, '+', '*'], {'a': 3}, 12),
-
-        (['a', 'b', '<', 5, 14, '?'], {'a': 10, 'b': 5}, 14),
-        (['a', 'b', '<', 5, 14, '?'], {'a': 5, 'b': 10}, 5),
-
-        (['a', 'b', '-'], {'a': 5, 'b': 10}, -5),
-        (['a', 'b', '-'], {'a': 10, 'b': 10}, 0),
-
-        (['a', 'b', '/'], {'a': 10, 'b': 10}, 1),
-        (['a', 'b', '/'], {'a': 10, 'b': 11}, 0),
-        (['a', 'b', '/'], {'a': 10, 'b': 4}, 2),
-    ]
-)
-def test_process_expression_without_precalc(expression, values, expected):
-    assert calc(expression, values, Stack()) == expected
-
-
-@pytest.mark.parametrize(
-    ('expression', 'expected_expression', 'expected_stack'),
-    [
-        (['2', '2', '+'], [], Stack([4])),
-        (['a', '2', '+'], ['+'], Stack(['a', 2])),
-        (['a', '2', '2', '+', '*'], ['*'], Stack(['a', 4])),
-
-        (['a', 'b', '<', '5', '14', '?'], ['<', '5', '14', '?'], Stack(['a', 'b'])),
-    ]
-)
-def test_prepare_expression(expression, expected_expression, expected_stack):
-    assert pre_calc(expression) == (expected_expression, expected_stack)
-
-
-@pytest.mark.parametrize(
-    ('expression', 'stack', 'values', 'expected'),
-    [
-        ([], Stack([4]), {}, 4),
-        (['*'], Stack(['a', 4]), {'a': 2}, 8),
-    ]
-)
-def test_process_expression_after_precalc(expression, values, stack, expected):
-    assert calc(expression, values, stack) == expected
 
 
 @pytest.mark.parametrize(

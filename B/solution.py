@@ -1,4 +1,3 @@
-from string import ascii_lowercase
 from typing import List, Tuple, Dict
 
 
@@ -69,16 +68,12 @@ operation_mapping = {
     '?': (choose, 3),
 }
 
-LETTERS = set(ascii_lowercase)
 
-
-def calc(expression: List[str], values: Dict[str, int], stack: Stack):
+def calc(expression: List[str], values: Dict[str, int]):
     """ Calculate given expression with variable values and prepared stack. """
-    stack = stack.copy()
+    stack = Stack()
     for symbol in expression:
-        if isinstance(symbol, int):
-            stack.push(symbol)
-        elif symbol.isdigit():
+        if symbol.isdigit():
             stack.push(int(symbol))
         elif symbol in values:
             stack.push(values[symbol])
@@ -96,36 +91,8 @@ def calc(expression: List[str], values: Dict[str, int], stack: Stack):
     return stack.pop()
 
 
-def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
-    """ Simplify expression before first variable. """
-    stack = Stack()
-    idx = 0
-    for idx, symbol in enumerate(expression):
-        if symbol.isdigit():
-            stack.push(int(symbol))
-        elif symbol in LETTERS:
-            stack.push(symbol)
-        else:
-            func, arg_cnt = operation_mapping[symbol]
-            args = [stack.pop() for _ in range(arg_cnt)]
-            if any((isinstance(x, str)) for x in args):
-                # cannot process expression because it has variable,
-                # return values back to stack
-                for x in reversed(args):
-                    stack.push(x)
-
-                # operation hasn't been processed yet,
-                # we should place it back to expression list
-                idx -= 1
-                break
-            stack.push(func(*args))
-
-    return expression[idx + 1:], stack
-
-
 def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[int]:
-    pre_expression, pre_stack = pre_calc(expression)
-    return [calc(pre_expression, values, pre_stack) for values in values_list]
+    return [calc(expression, values) for values in values_list]
 
 
 def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:
