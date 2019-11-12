@@ -78,7 +78,14 @@ def calc(expression: List[str], values: Dict[str, int]):
         elif symbol in values:
             stack.push(values[symbol])
         else:
-            func, arg_cnt = operation_mapping[symbol]
+            try:
+                func, arg_cnt = operation_mapping[symbol]
+            except KeyError:
+                # from string import ascii_lowercase
+                # nums = '0123456789'
+                # if set(symbol) - (set(ascii_lowercase) | set(nums) | operation_mapping.keys()):
+                #     return 0
+                raise
 
             args = []
             for _ in range(arg_cnt):
@@ -96,16 +103,26 @@ def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[
 
 
 def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:
-    variables = sorted([x for x in expression.split() if x.isalpha()])
-    return [
-        {var: int(value) for var, value in zip(variables, value_row.split())}
-        for value_row in value_rows
-    ]
+    variables = sorted(set(x for x in expression.split() if x.isalpha()))
+    dict_values = []
+    for value_row in value_rows:
+        assert len(variables) == len(value_row.split())
+        dict_values.append({var: int(value) for var, value in zip(variables, value_row.split())})
+    return dict_values
 
 
 def read() -> Tuple[str, List[str]]:
     _ = input()
     expression = input()
+    for x in expression.split():
+        if x.isalpha():
+            continue
+        elif x.isdigit():
+            continue
+        elif x in '+-*/<=>?':
+            continue
+        else:
+            raise ValueError
     cases_cnt = int(input())
     var_values = [input() for _ in range(cases_cnt)]
     return expression, var_values
