@@ -59,6 +59,7 @@ def test_main_calc(expression, values_list, expected):
         ('a 2 +', ['2', '3'], [{'a': 2}, {'a': 3}]),
         ('a b < 5 14 ?', ['5 10', '10 5'], [{'a': 5, 'b': 10}, {'a': 10, 'b': 5}]),
         ('a 2 z 80 p - / * +', ['1 2 3'], [{'a': 1, 'p': 2, 'z': 3}]),
+        ('a a 2 z 80 p - / * + +', ['1 2 3'], [{'a': 1, 'p': 2, 'z': 3}]),
     ],
 )
 def test_read_values(expression, value_rows, expected_dict):
