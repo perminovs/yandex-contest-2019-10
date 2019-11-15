@@ -127,7 +127,7 @@ def main_calc(expression: List[str], values_list: List[Dict[str, int]]) -> List[
 
 
 def convert_values_to_dict(expression: str, value_rows: List[str]) -> List[Dict[str, int]]:
-    variables = sorted([x for x in expression.split() if x.isalpha()])
+    variables = sorted({x for x in expression.split() if x.isalpha()})
     return [
         {var: int(value) for var, value in zip(variables, value_row.split())}
         for value_row in value_rows
