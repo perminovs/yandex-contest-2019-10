@@ -76,13 +76,9 @@ def calc(expression: List[str], values: Dict[str, int], stack: Stack):
     """ Calculate given expression with variable values and prepared stack. """
     stack = stack.copy()
     for symbol in expression:
-        if isinstance(symbol, int):
-            stack.push(symbol)
-        elif symbol.isdigit():
-            stack.push(int(symbol))
-        elif symbol in values:
+        if symbol in values:
             stack.push(values[symbol])
-        else:
+        elif symbol in operation_mapping:
             func, arg_cnt = operation_mapping[symbol]
 
             args = []
@@ -93,6 +89,8 @@ def calc(expression: List[str], values: Dict[str, int], stack: Stack):
                     x = values[x]
                 args.append(x)
             stack.push(func(*args))
+        else:
+            stack.push(int(symbol))
     return stack.pop()
 
 
@@ -101,11 +99,9 @@ def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
     stack = Stack()
     idx = 0
     for idx, symbol in enumerate(expression):
-        if symbol.isdigit():
-            stack.push(int(symbol))
-        elif symbol in LETTERS:
+        if symbol in LETTERS:
             stack.push(symbol)
-        else:
+        elif symbol in operation_mapping:
             func, arg_cnt = operation_mapping[symbol]
             args = [stack.pop() for _ in range(arg_cnt)]
             if any((isinstance(x, str)) for x in args):
@@ -119,6 +115,8 @@ def pre_calc(expression: List[str]) -> Tuple[List[str], Stack]:
                 idx -= 1
                 break
             stack.push(func(*args))
+        else:
+            stack.push(int(symbol))
 
     return expression[idx + 1:], stack
 

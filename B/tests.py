@@ -52,6 +52,8 @@ def test_error_on_empty_pop(stack):
         (['a', 'b', '/'], {'a': 10, 'b': 10}, 1),
         (['a', 'b', '/'], {'a': 10, 'b': 11}, 0),
         (['a', 'b', '/'], {'a': 10, 'b': 4}, 2),
+
+        (['-1', 'a', '1', '+', '+'], {'a': 1}, 1),
     ]
 )
 def test_process_expression_without_precalc(expression, values, expected):
@@ -64,6 +66,7 @@ def test_process_expression_without_precalc(expression, values, expected):
         (['2', '2', '+'], [], Stack([4])),
         (['a', '2', '+'], ['+'], Stack(['a', 2])),
         (['a', '2', '2', '+', '*'], ['*'], Stack(['a', 4])),
+        (['a', '-1', '2', '+', '*'], ['*'], Stack(['a', 1])),
 
         (['a', 'b', '<', '5', '14', '?'], ['<', '5', '14', '?'], Stack(['a', 'b'])),
     ]
@@ -93,6 +96,8 @@ def test_process_expression_after_precalc(expression, values, stack, expected):
         ('a b < 5 14 ?'.split(), [{'a': 10, 'b': 5}, {'a': 5, 'b': 10}], [14, 5]),
         ('0 a a 0 0 + + + +'.split(), [{'a': 10}, {'a': 5}], [20, 10]),
         ('0 a a 0 0 + + + +'.split(), [{'a': 10}, {'a': 5}], [20, 10]),
+        ('-1 1 +'.split(), [{}], [0]),
+        ('-1 a 1 + +'.split(), [{'a': 1}], [1]),
     ],
 )
 def test_main_calc(expression, values_list, expected):
