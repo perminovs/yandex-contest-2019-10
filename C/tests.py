@@ -1,6 +1,6 @@
 import pytest
 
-from .solution import build_minimum_spanning_tree
+from .solution import build_minimum_spanning_tree, convert_graph
 
 
 @pytest.mark.parametrize(
@@ -71,3 +71,38 @@ from .solution import build_minimum_spanning_tree
 )
 def test_build_minimum_spanning_tree(graph, expected_tree):
     assert build_minimum_spanning_tree(graph) == expected_tree
+
+
+@pytest.mark.parametrize(
+    ('nodes', 'branches', 'expected'),
+    [
+        (
+            {1: 10},
+            [],
+            {
+                (10, -1, 1),
+            }
+        ),
+        (
+            {1: 10, 2: 20},
+            [],
+            {
+                (10, -1, 1),
+                (20, -1, 2),
+            }
+        ),
+        (
+            {1: 10, 2: 20},
+            [
+                (15, 1, 2),
+            ],
+            {
+                (15, 1, 2),
+                (10, -1, 1),
+                (20, -1, 2),
+            }
+        ),
+    ]
+)
+def test_convert_graph(nodes, branches, expected):
+    assert convert_graph(nodes, branches) == expected

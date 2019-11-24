@@ -1,3 +1,17 @@
+from typing import Dict, Iterable, Tuple
+
+Branch = Tuple[int, int, int]
+Branches = Iterable[Branch]
+
+
+def convert_graph(nodes: Dict[int, int], branches: Branches) -> Branches:
+    fiction_branched = {
+        (w, -1, num)
+        for num, w in nodes.items()
+    }
+    return fiction_branched | set(branches)
+
+
 def build_minimum_spanning_tree(graph):
     # graph: [(weight, e1, e2), (...), ...]
     minimum_spanning_tree = set()
