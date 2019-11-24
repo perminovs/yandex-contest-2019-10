@@ -53,3 +53,26 @@ def solve(nodes: Dict[int, int], branches: Branches) -> int:
     for v in best_tree:
         res += v[0]
     return res
+
+
+def read():
+    _ = int(input().strip())
+    costs = list(map(int, input().strip().split()))
+    nodes = {idx: cost for idx, cost in enumerate(costs, start=1)}
+
+    branches_cnt = int(input().strip())
+    branches = []
+    for _ in range(branches_cnt):
+        n1, n2, w = map(int, input().strip().split())
+        branches.append((w, n1, n2))
+    return nodes, branches
+
+
+def main():
+    nodes, branches = read()
+    cost = solve(nodes, branches)
+    print(cost)
+
+
+if __name__ == '__main__':
+    main()
