@@ -44,3 +44,12 @@ def build_minimum_spanning_tree(graph):
         minimum_spanning_tree.add(v)
 
     return minimum_spanning_tree
+
+
+def solve(nodes: Dict[int, int], branches: Branches) -> int:
+    converted = convert_graph(nodes, branches)
+    best_tree = build_minimum_spanning_tree(converted)
+    res = 0
+    for v in best_tree:
+        res += v[0]
+    return res
